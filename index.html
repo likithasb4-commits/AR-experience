@@ -1,1 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Polaris Ranger | AR Experience</title>
 
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <!-- Analytics: replace UA-XXXXXXXX with your Google Analytics ID if you have one -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0d0d0d;
+      --white:   #f4f4f0;
+      --lime:    #b8d400;
+      --orange:  #e85c0d;
+      --gray:    #2a2a2a;
+      --muted:   #888;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ─── LANDING ──────────────────────────────────── */
+    #landing {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem;
+      background: var(--black);
+      z-index: 100;
+      transition: opacity .5s ease, visibility .5s ease;
+      overflow: hidden;
+    }
+    #landing::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 100%, rgba(184,212,0,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 20%, rgba(232,92,13,.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    #landing.hidden { opacity: 0; visibility: hidden; }
+
+    .brand-bar {
+      display: flex; align-items: center; gap: .6rem;
+      margin-bottom: 2.5rem;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--lime);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-icon svg { width: 22px; height: 22px; }
+    .brand-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(3rem, 14vw, 6rem);
+      font-weight: 800;
+      line-height: .88;
+      letter-spacing: -.01em;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    h1 .model { color: var(--lime); display: block; }
+    h1 .series { color: var(--white); display: block; font-size: 55%; letter-spacing: .15em; font-weight: 600; }
+
+    .tagline {
+      font-size: .85rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+      max-width: 260px;
+      margin-bottom: 3rem;
+    }
+    .tagline strong { color: var(--white); font-weight: 500; }
+
+    #launch-btn {
+      position: relative;
+      display: inline-flex; align-items: center; gap: .75rem;
+      background: var(--lime);
+      color: var(--black);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      border: none;
+      padding: 1rem 2.25rem;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: transform .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 0 40px rgba(184,212,0,.25);
+    }
+    #launch-btn:active { transform: scale(.97); background: #cff000; }
+    #launch-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .specs {
+      display: flex; gap: 2rem;
+      margin-top: 2.5rem;
+    }
+    .spec {
+      text-align: center;
+    }
+    .spec-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--lime);
+    }
+    .spec-label {
+      font-size: .62rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: .15rem;
+    }
+
+    /* ─── VIEWER ───────────────────────────────────── */
+    #viewer-wrap {
+      position: fixed; inset: 0;
+      opacity: 0; visibility: hidden;
+      transition: opacity .5s ease, visibility .5s ease;
+      z-index: 50;
+    }
+    #viewer-wrap.visible { opacity: 1; visibility: visible; }
+
+    model-viewer {
+      width: 100%; height: 100%;
+      background-color: #111;
+      --poster-color: transparent;
+    }
+
+    /* ─── AR BUTTON ────────────────────────────────── */
+    #ar-button {
+      position: absolute;
+      bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex; align-items: center; gap: .65rem;
+      background: var(--lime);
+      color: var(--black);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      border: none;
+      padding: .95rem 2rem;
+      cursor: pointer;
+      border-radius: 3px;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 0 0 1px rgba(184,212,0,.4), 0 8px 32px rgba(0,0,0,.6);
+    }
+    #ar-button svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ─── TOP BAR ──────────────────────────────────── */
+    #top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(to bottom, rgba(13,13,13,.9), transparent);
+      z-index: 10;
+      pointer-events: none;
+    }
+    #back-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(244,244,240,.08);
+      border: 1px solid rgba(244,244,240,.15);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .5rem 1rem;
+      cursor: pointer;
+      border-radius: 3px;
+      pointer-events: all;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .top-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--lime);
+    }
+
+    /* ─── LOADING ──────────────────────────────────── */
+    #loading-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem;
+      background: #111;
+      z-index: 5;
+      transition: opacity .5s ease;
+    }
+    #loading-overlay.done { opacity: 0; pointer-events: none; }
+
+    .loader-track {
+      width: 180px; height: 3px;
+      background: rgba(184,212,0,.15);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .loader-fill {
+      height: 100%;
+      background: var(--lime);
+      width: 0%;
+      transition: width .3s ease;
+      border-radius: 2px;
+    }
+    .loader-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .loader-pct {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--lime);
+    }
+
+    /* ─── AR STATUS TOAST ──────────────────────────── */
+    #ar-toast {
+      position: absolute;
+      top: 5rem; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13,13,13,.9);
+      border: 1px solid rgba(184,212,0,.3);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .6rem 1.25rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .3s ease;
+      pointer-events: none;
+      z-index: 20;
+    }
+    #ar-toast.show { opacity: 1; }
+
+    /* ─── ANALYTICS PIXEL ──────────────────────────── */
+    /* Simple sessionStorage-based analytics (no server needed) */
+  </style>
+</head>
+<body>
+
+<!-- ═══ LANDING ════════════════════════════════════════ -->
+<div id="landing">
+  <div class="brand-bar">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="black">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="brand-name">Polaris</span>
+  </div>
+
+  <h1>
+    <span class="series">Experience the</span>
+    <span class="model">Ranger</span>
+  </h1>
+
+  <p class="tagline">Place a <strong>true-scale</strong> Polaris Ranger in your world. No app needed — just point and explore.</p>
+
+  <button id="launch-btn" onclick="launchViewer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+    </svg>
+    View in AR
+  </button>
+
+  <div class="specs">
+    <div class="spec">
+      <div class="spec-val">82HP</div>
+      <div class="spec-label">Engine</div>
+    </div>
+    <div class="spec">
+      <div class="spec-val">3</div>
+      <div class="spec-label">Seats</div>
+    </div>
+    <div class="spec">
+      <div class="spec-val">1500lb</div>
+      <div class="spec-label">Payload</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VIEWER ══════════════════════════════════════════ -->
+<div id="viewer-wrap">
+
+  <div id="top-bar">
+    <button id="back-btn" onclick="goBack()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Back
+    </button>
+    <span class="top-brand">Polaris Ranger</span>
+    <div style="width:60px"></div>
+  </div>
+
+  <model-viewer
+    id="mv"
+    src="./ranger_optimized.glb"
+    alt="Polaris Ranger UTV"
+    ar
+    ar-modes="scene-viewer webxr quick-look"
+    ar-placement="floor"
+    ar-scale="fixed"
+    camera-controls
+    auto-rotate
+    auto-rotate-delay="3000"
+    rotation-per-second="12deg"
+    shadow-intensity="1.2"
+    shadow-softness="0.9"
+    exposure="1.1"
+    environment-image="neutral"
+    camera-orbit="-30deg 75deg 5m"
+    min-camera-orbit="auto auto 1m"
+    max-camera-orbit="auto auto 10m"
+    loading="eager"
+  >
+
+    <button id="ar-button" slot="ar-button" onclick="trackAR()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M2 8.5L12 3l10 5.5v7L12 21 2 15.5v-7z"/>
+        <path d="M12 3v18M2 8.5l10 6.5 10-6.5"/>
+      </svg>
+      Place in your world
+    </button>
+
+    <!-- Loading bar -->
+    <div id="loading-overlay">
+      <div class="loader-pct" id="pct">0%</div>
+      <div class="loader-track"><div class="loader-fill" id="fill"></div></div>
+      <div class="loader-text">Loading Ranger…</div>
+    </div>
+
+  </model-viewer>
+
+  <div id="ar-toast">Point camera at the floor</div>
+
+</div>
+
+
+<script>
+  const mv      = document.getElementById('mv');
+  const landing = document.getElementById('landing');
+  const viewer  = document.getElementById('viewer-wrap');
+  const fill    = document.getElementById('fill');
+  const pct     = document.getElementById('pct');
+  const toast   = document.getElementById('ar-toast');
+
+  // ── Analytics (lightweight, no server needed) ──────────
+  const analytics = {
+    sessionStart: Date.now(),
+    events: [],
+    track(event) {
+      const entry = { event, time: new Date().toISOString(), elapsed: Date.now() - this.sessionStart };
+      this.events.push(entry);
+      console.log('[AR Analytics]', entry);
+      // To send to a real endpoint:
+      // fetch('/analytics', { method: 'POST', body: JSON.stringify(entry) });
+      // Or use Google Analytics:
+      // if (window.gtag) gtag('event', event);
+    }
+  };
+
+  // ── Launch viewer ──────────────────────────────────────
+  function launchViewer() {
+    analytics.track('viewer_opened');
+    landing.classList.add('hidden');
+    viewer.classList.add('visible');
+  }
+
+  function goBack() {
+    analytics.track('viewer_closed');
+    viewer.classList.remove('visible');
+    landing.classList.remove('hidden');
+  }
+
+  function trackAR() {
+    analytics.track('ar_launched');
+    showToast('Point camera at the floor');
+  }
+
+  // ── Loading progress ───────────────────────────────────
+  mv.addEventListener('progress', (e) => {
+    const p = Math.round(e.detail.totalProgress * 100);
+    fill.style.width = p + '%';
+    pct.textContent  = p + '%';
+  });
+
+  mv.addEventListener('load', () => {
+    analytics.track('model_loaded');
+    const overlay = document.getElementById('loading-overlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.style.display = 'none', 500);
+  });
+
+  // Backup: force hide after 6 seconds no matter what
+  setTimeout(() => {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.style.display = 'none', 500);
+    }
+  }, 6000);
+
+  // ── AR status ─────────────────────────────────────────
+  mv.addEventListener('ar-status', (e) => {
+    analytics.track('ar_status_' + e.detail.status);
+    if (e.detail.status === 'object-placed') {
+      showToast('Walk around your Ranger 360°');
+    }
+  });
+
+  // ── Toast helper ──────────────────────────────────────
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ── Track page view ───────────────────────────────────
+  analytics.track('page_view');
+</script>
+</body>
+</html>
