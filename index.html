@@ -6,12 +6,7 @@
   <title>Polaris RZR | AR Experience</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/meshoptimizer@0.18.1/meshopt_decoder.js"></script>
-  <script>
-    window.MeshoptDecoder=MeshoptDecoder;
-  </script>
-
-  <!-- Analytics: replace UA-XXXXXXXX with your Google Analytics ID if you have one -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
+  <script>window.MeshoptDecoder=MeshoptDecoder;</script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&display=swap');
@@ -70,50 +65,37 @@
     .brand-icon svg { width: 22px; height: 22px; }
     .brand-name {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: .2em;
-      text-transform: uppercase;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
       color: var(--white);
     }
 
     h1 {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: clamp(3rem, 14vw, 6rem);
-      font-weight: 800;
-      line-height: .88;
-      letter-spacing: -.01em;
-      text-align: center;
-      text-transform: uppercase;
-      margin-bottom: 1.25rem;
+      font-weight: 800; line-height: .88;
+      letter-spacing: -.01em; text-align: center;
+      text-transform: uppercase; margin-bottom: 1.25rem;
     }
-    h1 .model { color: var(--lime); display: block; }
+    h1 .model  { color: var(--lime); display: block; }
     h1 .series { color: var(--white); display: block; font-size: 55%; letter-spacing: .15em; font-weight: 600; }
 
     .tagline {
-      font-size: .85rem;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.7;
-      max-width: 260px;
-      margin-bottom: 3rem;
+      font-size: .85rem; color: var(--muted);
+      text-align: center; line-height: 1.7;
+      max-width: 260px; margin-bottom: 3rem;
     }
     .tagline strong { color: var(--white); font-weight: 500; }
 
     #launch-btn {
       position: relative;
       display: inline-flex; align-items: center; gap: .75rem;
-      background: var(--lime);
-      color: var(--black);
+      background: var(--lime); color: var(--black);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      border: none;
-      padding: 1rem 2.25rem;
-      cursor: pointer;
-      border-radius: 3px;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: .15em; text-transform: uppercase;
+      border: none; padding: 1rem 2.25rem;
+      cursor: pointer; border-radius: 3px;
       transition: transform .15s, background .15s;
       -webkit-tap-highlight-color: transparent;
       box-shadow: 0 0 40px rgba(184,212,0,.25);
@@ -121,25 +103,15 @@
     #launch-btn:active { transform: scale(.97); background: #cff000; }
     #launch-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 
-    .specs {
-      display: flex; gap: 2rem;
-      margin-top: 2.5rem;
-    }
-    .spec {
-      text-align: center;
-    }
+    .specs { display: flex; gap: 2rem; margin-top: 2.5rem; }
+    .spec { text-align: center; }
     .spec-val {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--lime);
+      font-size: 1.4rem; font-weight: 700; color: var(--lime);
     }
     .spec-label {
-      font-size: .62rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: .15rem;
+      font-size: .62rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted); margin-top: .15rem;
     }
 
     /* ─── VIEWER ───────────────────────────────────── */
@@ -157,23 +129,63 @@
       --poster-color: transparent;
     }
 
+    /* ─── BOUNCE ANIMATION ─────────────────────────── */
+    @keyframes bounce {
+      0%   { transform: translateY(0); }
+      20%  { transform: translateY(-18px); }
+      40%  { transform: translateY(0); }
+      55%  { transform: translateY(-10px); }
+      70%  { transform: translateY(0); }
+      85%  { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+    model-viewer.bouncing {
+      animation: bounce 0.7s ease-in-out 3;
+    }
+
+    /* ─── CONTROL BUTTONS ──────────────────────────── */
+    #controls {
+      position: absolute;
+      bottom: 6.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: .65rem;
+      z-index: 15;
+    }
+    .ctrl-btn {
+      display: inline-flex; flex-direction: column;
+      align-items: center; gap: .3rem;
+      background: rgba(13,13,13,.88);
+      border: 1px solid rgba(184,212,0,.25);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .6rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .65rem 1rem;
+      cursor: pointer; border-radius: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .2s, border-color .2s, color .2s;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
+    .ctrl-btn svg { width: 20px; height: 20px; }
+    .ctrl-btn.active {
+      background: rgba(184,212,0,.18);
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+
     /* ─── AR BUTTON ────────────────────────────────── */
     #ar-button {
       position: absolute;
       bottom: 2.5rem; left: 50%;
       transform: translateX(-50%);
       display: inline-flex; align-items: center; gap: .65rem;
-      background: var(--lime);
-      color: var(--black);
+      background: var(--lime); color: var(--black);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: .95rem;
-      font-weight: 700;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      border: none;
-      padding: .95rem 2rem;
-      cursor: pointer;
-      border-radius: 3px;
+      font-size: .95rem; font-weight: 700;
+      letter-spacing: .15em; text-transform: uppercase;
+      border: none; padding: .95rem 2rem;
+      cursor: pointer; border-radius: 3px;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
       box-shadow: 0 0 0 1px rgba(184,212,0,.4), 0 8px 32px rgba(0,0,0,.6);
@@ -186,8 +198,7 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 1rem 1.25rem;
       background: linear-gradient(to bottom, rgba(13,13,13,.9), transparent);
-      z-index: 10;
-      pointer-events: none;
+      z-index: 10; pointer-events: none;
     }
     #back-btn {
       display: inline-flex; align-items: center; gap: .4rem;
@@ -195,22 +206,16 @@
       border: 1px solid rgba(244,244,240,.15);
       color: var(--white);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: .75rem;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      padding: .5rem 1rem;
-      cursor: pointer;
-      border-radius: 3px;
+      font-size: .75rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: .5rem 1rem; cursor: pointer; border-radius: 3px;
       pointer-events: all;
       -webkit-tap-highlight-color: transparent;
     }
     .top-brand {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: .8rem;
-      font-weight: 700;
-      letter-spacing: .2em;
-      text-transform: uppercase;
+      font-size: .8rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
       color: var(--lime);
     }
 
@@ -219,40 +224,29 @@
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 1rem;
-      background: #111;
-      z-index: 5;
+      background: #111; z-index: 5;
       transition: opacity .5s ease;
     }
-    #loading-overlay.done { opacity: 0; pointer-events: none; }
-
     .loader-track {
       width: 180px; height: 3px;
       background: rgba(184,212,0,.15);
-      border-radius: 2px;
-      overflow: hidden;
+      border-radius: 2px; overflow: hidden;
     }
     .loader-fill {
-      height: 100%;
-      background: var(--lime);
-      width: 0%;
-      transition: width .3s ease;
-      border-radius: 2px;
+      height: 100%; background: var(--lime);
+      width: 0%; transition: width .3s ease; border-radius: 2px;
     }
     .loader-text {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: .7rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--muted);
+      font-size: .7rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--muted);
     }
     .loader-pct {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--lime);
+      font-size: 2rem; font-weight: 700; color: var(--lime);
     }
 
-    /* ─── AR STATUS TOAST ──────────────────────────── */
+    /* ─── TOAST ────────────────────────────────────── */
     #ar-toast {
       position: absolute;
       top: 5rem; left: 50%;
@@ -261,21 +255,14 @@
       border: 1px solid rgba(184,212,0,.3);
       color: var(--white);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: .8rem;
-      letter-spacing: .1em;
+      font-size: .8rem; letter-spacing: .1em;
       text-transform: uppercase;
-      padding: .6rem 1.25rem;
-      border-radius: 3px;
-      white-space: nowrap;
-      opacity: 0;
+      padding: .6rem 1.25rem; border-radius: 3px;
+      white-space: nowrap; opacity: 0;
       transition: opacity .3s ease;
-      pointer-events: none;
-      z-index: 20;
+      pointer-events: none; z-index: 20;
     }
     #ar-toast.show { opacity: 1; }
-
-    /* ─── ANALYTICS PIXEL ──────────────────────────── */
-    /* Simple sessionStorage-based analytics (no server needed) */
   </style>
 </head>
 <body>
@@ -307,18 +294,9 @@
   </button>
 
   <div class="specs">
-    <div class="spec">
-      <div class="spec-val">82HP</div>
-      <div class="spec-label">Engine</div>
-    </div>
-    <div class="spec">
-      <div class="spec-val">3</div>
-      <div class="spec-label">Seats</div>
-    </div>
-    <div class="spec">
-      <div class="spec-val">1500lb</div>
-      <div class="spec-label">Payload</div>
-    </div>
+    <div class="spec"><div class="spec-val">82HP</div><div class="spec-label">Engine</div></div>
+    <div class="spec"><div class="spec-val">3</div><div class="spec-label">Seats</div></div>
+    <div class="spec"><div class="spec-val">1500lb</div><div class="spec-label">Payload</div></div>
   </div>
 </div>
 
@@ -353,14 +331,13 @@
     shadow-softness="0.9"
     exposure="1.1"
     environment-image="neutral"
-    camera-orbit="-0deg 75deg auto"
+    camera-orbit="0deg 75deg auto"
     min-camera-orbit="auto auto auto"
     max-camera-orbit="auto auto auto"
     min-field-of-view="30deg"
     max-field-of-view="45deg"
     loading="eager"
   >
-
     <button id="ar-button" slot="ar-button" onclick="trackAR()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M2 8.5L12 3l10 5.5v7L12 21 2 15.5v-7z"/>
@@ -369,44 +346,77 @@
       Place in your world
     </button>
 
-    <!-- Loading bar -->
     <div id="loading-overlay">
       <div class="loader-pct" id="pct">0%</div>
       <div class="loader-track"><div class="loader-fill" id="fill"></div></div>
       <div class="loader-text">Loading Ranger…</div>
     </div>
-
   </model-viewer>
+
+  <!-- ── Feature buttons ── -->
+  <div id="controls">
+
+    <!-- Flip / underside toggle -->
+    <button class="ctrl-btn" id="flip-btn" onclick="toggleFlip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v20M2 12l10-10 10 10"/>
+      </svg>
+      Flip
+    </button>
+
+    <!-- Suspension hop -->
+    <button class="ctrl-btn" id="bounce-btn" onclick="triggerBounce()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+        <path d="M5 19h14"/>
+      </svg>
+      Hop
+    </button>
+
+    <!-- Engine sound -->
+    <button class="ctrl-btn" id="sound-btn" onclick="toggleSound()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+      Sound
+    </button>
+
+  </div>
 
   <div id="ar-toast">Point camera at the floor</div>
 
 </div>
 
+<!-- Engine sound -->
+<audio id="engine-audio" loop preload="none">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2067/2067-preview.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-  const mv      = document.getElementById('mv');
-  const landing = document.getElementById('landing');
-  const viewer  = document.getElementById('viewer-wrap');
-  const fill    = document.getElementById('fill');
-  const pct     = document.getElementById('pct');
-  const toast   = document.getElementById('ar-toast');
+  const mv          = document.getElementById('mv');
+  const landing     = document.getElementById('landing');
+  const viewer      = document.getElementById('viewer-wrap');
+  const fill        = document.getElementById('fill');
+  const pct         = document.getElementById('pct');
+  const toast       = document.getElementById('ar-toast');
+  const engineAudio = document.getElementById('engine-audio');
 
-  // ── Analytics (lightweight, no server needed) ──────────
+  let flipMode = false;
+  let soundOn  = false;
+
+  // ── Analytics ──────────────────────────────────────────
   const analytics = {
-    sessionStart: Date.now(),
-    events: [],
+    sessionStart: Date.now(), events: [],
     track(event) {
       const entry = { event, time: new Date().toISOString(), elapsed: Date.now() - this.sessionStart };
       this.events.push(entry);
       console.log('[AR Analytics]', entry);
-      // To send to a real endpoint:
-      // fetch('/analytics', { method: 'POST', body: JSON.stringify(entry) });
-      // Or use Google Analytics:
-      // if (window.gtag) gtag('event', event);
     }
   };
 
-  // ── Launch viewer ──────────────────────────────────────
+  // ── Launch / Back ──────────────────────────────────────
   function launchViewer() {
     analytics.track('viewer_opened');
     landing.classList.add('hidden');
@@ -415,6 +425,7 @@
 
   function goBack() {
     analytics.track('viewer_closed');
+    stopSound();
     viewer.classList.remove('visible');
     landing.classList.remove('hidden');
   }
@@ -422,6 +433,62 @@
   function trackAR() {
     analytics.track('ar_launched');
     showToast('Point camera at the floor');
+  }
+
+  // ── FLIP MODE — unlock underside rotation ──────────────
+  function toggleFlip() {
+    flipMode = !flipMode;
+    const btn = document.getElementById('flip-btn');
+    if (flipMode) {
+      mv.setAttribute('min-camera-orbit', 'auto -180deg auto');
+      mv.setAttribute('max-camera-orbit', 'auto 180deg auto');
+      btn.classList.add('active');
+      showToast('Drag UP to see underside');
+      analytics.track('flip_on');
+    } else {
+      mv.setAttribute('min-camera-orbit', 'auto 0deg auto');
+      mv.setAttribute('max-camera-orbit', 'auto 90deg auto');
+      mv.setAttribute('camera-orbit', '0deg 75deg auto');
+      btn.classList.remove('active');
+      showToast('Floor mode restored');
+      analytics.track('flip_off');
+    }
+  }
+
+  // ── SUSPENSION HOP ─────────────────────────────────────
+  function triggerBounce() {
+    analytics.track('suspension_hop');
+    mv.classList.remove('bouncing');
+    void mv.offsetWidth; // force reflow to restart animation
+    mv.classList.add('bouncing');
+    showToast('RZR suspension hop!');
+    mv.addEventListener('animationend', () => {
+      mv.classList.remove('bouncing');
+    }, { once: true });
+  }
+
+  // ── ENGINE SOUND ───────────────────────────────────────
+  function toggleSound() {
+    const btn = document.getElementById('sound-btn');
+    if (soundOn) {
+      stopSound();
+    } else {
+      engineAudio.play().then(() => {
+        soundOn = true;
+        btn.classList.add('active');
+        showToast('RZR engine running!');
+        analytics.track('sound_on');
+      }).catch(() => {
+        showToast('Tap again to start sound');
+      });
+    }
+  }
+
+  function stopSound() {
+    engineAudio.pause();
+    engineAudio.currentTime = 0;
+    soundOn = false;
+    document.getElementById('sound-btn').classList.remove('active');
   }
 
   // ── Loading progress ───────────────────────────────────
@@ -438,31 +505,30 @@
     setTimeout(() => overlay.style.display = 'none', 500);
   });
 
-  // Backup: force hide after 6 seconds no matter what
   setTimeout(() => {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
       overlay.style.opacity = '0';
       setTimeout(() => overlay.style.display = 'none', 500);
     }
-  }, 6000);
+  }, 8000);
 
   // ── AR status ─────────────────────────────────────────
   mv.addEventListener('ar-status', (e) => {
     analytics.track('ar_status_' + e.detail.status);
     if (e.detail.status === 'object-placed') {
-      showToast('Walk around your Ranger 360°');
+      showToast('Pinch to resize • Walk 360°');
+      setTimeout(() => showToast('Spread fingers to make bigger!'), 3500);
     }
   });
 
-  // ── Toast helper ──────────────────────────────────────
+  // ── Toast ──────────────────────────────────────────────
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // ── Track page view ───────────────────────────────────
   analytics.track('page_view');
 </script>
 </body>
